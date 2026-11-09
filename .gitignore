@@ -1,0 +1,43 @@
+# Environment variables and secrets
+.env
+.env.*
+!.env.example
+**/.env
+**/.env.*
+
+# Python virtual environments
+venv/
+.venv/
+
+# Python cache
+__pycache__/
+*.py[cod]
+.pytest_cache/
+
+# Private document storage
+private_storage/
+backend/private_storage/
+
+# IDE and operating system files
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+# Node dependencies and build output
+node_modules/
+dist/
+
+# Encrypted files
+*.enc
+
+# Logs
+*.log
+
+# Test and coverage files
+.coverage
+htmlcov/
+
+# Local database backups
+*.sql
+*.dump
+test_document.txt
