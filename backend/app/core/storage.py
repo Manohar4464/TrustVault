@@ -1,18 +1,24 @@
+
 import os
 from pathlib import Path
 from dotenv import load_dotenv
 
 # Load environment variables
-load_dotenv()
+BASE_DIR = Path(__file__).resolve().parents[2]
+PROJECT_ROOT = BASE_DIR.parent
 
-# Project root directory
-PROJECT_ROOT = Path(__file__).resolve().parents[3]
+load_dotenv(PROJECT_ROOT / ".env")
 
-# Read storage path from .env
-STORAGE_PATH = os.getenv("STORAGE_PATH", "../private_storage")
+# Read storage path from environment
+STORAGE_PATH = os.getenv("STORAGE_PATH", "private_storage")
 
-# Resolve storage path independently of the terminal directory
-STORAGE_DIR = (PROJECT_ROOT / "backend" / STORAGE_PATH).resolve()
+# Resolve storage path
+storage_path = Path(STORAGE_PATH)
+
+if not storage_path.is_absolute():
+    storage_path = (PROJECT_ROOT / storage_path).resolve()
+
+STORAGE_DIR = storage_path
 
 # Create private storage directory if it doesn't exist
 STORAGE_DIR.mkdir(parents=True, exist_ok=True)

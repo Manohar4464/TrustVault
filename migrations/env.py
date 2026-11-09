@@ -7,7 +7,7 @@ from sqlalchemy import engine_from_config, pool
 
 from dotenv import load_dotenv
 
-from app.core.database import Base, DATABASE_URL
+from app.core.database import Base
 
 # Load environment configuration
 load_dotenv()
@@ -28,13 +28,15 @@ if config.config_file_name is not None:
 target_metadata = Base.metadata
 
 # Use the database URL from .env
-if not DATABASE_URL:
-    raise RuntimeError("DATABASE_URL is missing")
+# Use the migration-only database connection
+MIGRATION_DATABASE_URL = os.getenv("MIGRATION_DATABASE_URL")
 
-# Escape percent signs for ConfigParser interpolation
+if not MIGRATION_DATABASE_URL:
+    raise RuntimeError("MIGRATION_DATABASE_URL is missing")
+
 config.set_main_option(
     "sqlalchemy.url",
-    DATABASE_URL.replace("%", "%%")
+    MIGRATION_DATABASE_URL.replace("%", "%%")
 )
 
 
