@@ -31,7 +31,45 @@ from app.services.encryption import encrypt_file, decrypt_file
 
 
 router = APIRouter(prefix="/documents", tags=["Documents"])
+@router.get("/")
+def list_documents(
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db),
+):
+    query = db.query(Document)
 
+    if current_user.role == "admin":
+        documents = query.order_by(Document.created_at.desc()).all()
+
+    else:
+        documents = (
+            query.outerjoin(
+                DocumentPermission,
+                (DocumentPermission.document_id == Document.id)
+                & (DocumentPermission.user_id == current_user.id)
+                & (DocumentPermission.is_active.is_(True))
+                & (DocumentPermission.can_read.is_(True)),
+            )
+            .filter(
+                (Document.owner_id == current_user.id)
+                | (DocumentPermission.id.isnot(None))
+            )
+            .distinct()
+            .order_by(Document.created_at.desc())
+            .all()
+        )
+
+    return [
+        {
+            "id": str(document.id),
+            "filename": document.filename,
+            "file_size": document.file_size,
+            "encryption_algorithm": document.encryption_algorithm,
+            "created_at": document.created_at,
+            "owner_id": str(document.owner_id),
+        }
+        for document in documents
+    ]
 MAX_FILE_SIZE = 10 * 1024 * 1024
 
 ALLOWED_EXTENSIONS = {

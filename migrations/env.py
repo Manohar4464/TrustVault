@@ -30,6 +30,14 @@ target_metadata = Base.metadata
 # Use the database URL from .env
 # Use the migration-only database connection
 MIGRATION_DATABASE_URL = os.getenv("MIGRATION_DATABASE_URL")
+if MIGRATION_DATABASE_URL.startswith("postgresql://"):
+    MIGRATION_DATABASE_URL = MIGRATION_DATABASE_URL.replace(
+        "postgresql://", "postgresql+psycopg2://", 1
+    )
+elif MIGRATION_DATABASE_URL.startswith("postgres://"):
+    MIGRATION_DATABASE_URL = MIGRATION_DATABASE_URL.replace(
+        "postgres://", "postgresql+psycopg2://", 1
+    )
 
 if not MIGRATION_DATABASE_URL:
     raise RuntimeError("MIGRATION_DATABASE_URL is missing")
